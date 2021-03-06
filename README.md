@@ -1,2 +1,3 @@
 # Gmail_to_Trello
-A rest app that posts selected mails as Trello cards
+A rest app that posts selected Gmail mails as Trello cards
+
