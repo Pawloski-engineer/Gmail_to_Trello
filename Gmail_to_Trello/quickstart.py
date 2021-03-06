@@ -34,15 +34,32 @@ def main():
     service = build('gmail', 'v1', credentials=creds)
 
     # Call the Gmail API
-    results = service.users().labels().list(userId='me').execute()
-    labels = results.get('labels', [])
+    # results = service.users().labels().list(userId='me').execute()
+    # labels = results.get('labels', [])
 
-    if not labels:
-        print('No labels found.')
+    # Get Messages
+    results = service.users().messages().list(userId='me', labelIds='INBOX').execute()
+    messages = results.get('messages', [])
+
+
+    # if not labels:
+    #     print('No labels found.')
+    # else:
+    #     print('Labels:')
+    #     for label in labels:
+    #         print(label['name'])
+
+
+    message_count = int(input("How many ,essages should be displayed?"))
+    if not messages:
+        print('No messages found.')
     else:
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
+        print('Messages:')
+        for message in messages[:message_count]:
+            msg = service.users().messages().get(userId='me', id=message['id']).execute()
+            print(msg['snippet'])
+            print('\n')
+
 
 if __name__ == '__main__':
     main()
