@@ -9,6 +9,8 @@ from google.auth.transport.requests import Request
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def main():
+# def main(request):
+
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
     """
@@ -50,7 +52,7 @@ def main():
     #         print(label['name'])
 
 
-    message_count = int(input("How many ,essages should be displayed?"))
+    message_count = int(input("How many messages should be displayed?"))
     if not messages:
         print('No messages found.')
     else:
@@ -59,7 +61,13 @@ def main():
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
             print(msg['snippet'])
             print('\n')
+            # print("message from:")
+            # print(msg['payload'])
 
+            # print('try')
+            # r = request.post('https://api.trello.com/1/cards?key=213abf64ea582c0124da5fcfdb5a6cab&token=d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b&idList=6043a7a2e9e8ae6f9ffd133e&name=Sunday')
+            # print('tried')
 
 if __name__ == '__main__':
+    # main(request='POST')
     main()
