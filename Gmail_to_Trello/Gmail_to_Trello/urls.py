@@ -45,5 +45,9 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/', views.apiOverview, name="api-overview"),
     path('api/mail-list/', views.mailList, name="mail-list"),
+    path('download-mails/', views.downloadMails, name="download-mails"),
+    path('trello-lists/', views.trelloLists, name="download-mails"),
+    path('trello-boards/', views.trelloBoards, name="download-mails"),
+
 
 ]
