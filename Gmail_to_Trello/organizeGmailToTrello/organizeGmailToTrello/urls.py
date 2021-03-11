@@ -24,4 +24,6 @@ urlpatterns = [
     path('logout', LogoutView.as_view()),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path('', include('myGmail.urls')),
+
 ]
