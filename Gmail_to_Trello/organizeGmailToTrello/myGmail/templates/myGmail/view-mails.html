@@ -1,7 +1,7 @@
 {% load socialaccount %}
 <html>
   <head>
-    <title>Google Registration</title>
+    <title>View mails</title>
   </head>
   <body>
   <h1>My Google Login Project</h1>
@@ -12,8 +12,13 @@
   <h1>My Google Login Project</h1>
   <a href="{% provider_login_url 'google' %}">Login with Google</a>
   {% endif %}
+  Your mails:
+  {% for mail in responsemessages %}
+        <ul>
+            <li> {{ mail }}</li>
 
-  Show my <a href="/mails"> mails</a>
+        </ul>
 
+  {% endfor %}
   </body>
 </html>
