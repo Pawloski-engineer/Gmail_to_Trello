@@ -3,9 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 
 from allauth.socialaccount.models import SocialToken
+# from allauth.socialaccount.providers.trello.provider import TrelloProvider #in this file there is a problrm with incorrect url
+# https://github.com/pennersr/django-allauth/issues/2378
 
 from googleapiclient.discovery import build
-
 
 from google.oauth2.credentials import Credentials
 from django.shortcuts import render
@@ -59,4 +60,7 @@ def downloadMails(request):
         }
 
         return render(request, 'myGmail/view-mails.html', context)
+
+
+
 
