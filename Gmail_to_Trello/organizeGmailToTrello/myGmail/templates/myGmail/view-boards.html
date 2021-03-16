@@ -1,0 +1,51 @@
+{% load socialaccount %}
+<html>
+  <head>
+    <title>View boards</title>
+  </head>
+  <body>
+  <h1>My Google Login Project</h1>
+
+  Select table to put mails on:
+  <select onchange="load_lists()" id="table_id" value="{{ board_id }}">
+          <option value="" disabled selected> select a board </option>
+  {% for board in trello_boards %}
+       {% if board.id == selected_id %}
+          <option value="{{board.id}}" selected> {{ board.name }}</option>
+        {% else %}
+          <option value="{{board.id}}"> {{ board.name }}</option>
+
+      {% endif %}
+
+  {% endfor %}
+    </select>
+ {% if trello_lists and trello_lists|length > 0 %}
+  <p>select list</p>
+    <select id="list">
+            <option value="" disabled selected> select a list </option>
+    {% for list in trello_lists %}
+
+            <option value="{{list.id}}"> {{ list.name }}</option>
+
+    {% endfor %}
+      </select>
+  {% else %}
+  <p></p>
+  {% endif %}
+
+
+
+  <script>
+    function load_lists() {
+    var board_id = document.getElementById("table_id").value;
+    console.log(board_id)
+    window.location.href = "/boards/" + board_id;
+    }
+
+
+  </script>
+
+
+
+  </body>
+</html>
