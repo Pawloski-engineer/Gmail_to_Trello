@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from allauth.socialaccount.models import SocialToken
+from allauth.socialaccount.models import SocialToken, SocialAccount
 # from allauth.socialaccount.providers.trello.provider import TrelloProvider #in this file there is a problrm with incorrect url
 # https://github.com/pennersr/django-allauth/issues/2378
 
@@ -10,6 +10,9 @@ from googleapiclient.discovery import build
 
 from google.oauth2.credentials import Credentials
 from django.shortcuts import render
+
+import requests
+import json
 
 
 def downloadMails(request):
@@ -23,10 +26,20 @@ def downloadMails(request):
     # time.
     user = request.user
     result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
-    info = {'client_id':'50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com', 'client_secret':'9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token':result.token}
+    google_token = result.token
+    info = {'client_id':'50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com', 'client_secret':'9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
     creds = Credentials.from_authorized_user_info(info) #here
 
 
+
+    result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[0]
+    result_user = SocialAccount.objects.filter(user=user, provider="trello")[0]
+
+    trello_user_token = result_token.token
+    trello_uid = result_user.uid
+    trello_key = "213abf64ea582c0124da5fcfdb5a6cab"
+    trello_content_json = (requests.get('https://api.trello.com/1/members/' + trello_uid + '/boards?key=' + trello_key + '&token=' +  trello_user_token))
+    trello_content = json.loads(trello_content_json.text)
 
     service = build('gmail', 'v1', credentials=creds)
 
@@ -57,6 +70,7 @@ def downloadMails(request):
         # return render(request, 'myGmail/view-mails.html', responsemessages)
         context = {
             'responsemessages': responsemessages,
+            'trellocontent': trello_content,
         }
 
         return render(request, 'myGmail/view-mails.html', context)

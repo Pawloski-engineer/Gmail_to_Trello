@@ -7,10 +7,11 @@
   <h1>My Google Login Project</h1>
   {% if user.is_authenticated %}
   <p>Welcome, {{ user.username }} ! <a href="/logout"> Logout </a></p>
+  <a href="{% url 'socialaccount_connections'  %}">Go to social settings</a>
 
   {% else %}
   <h1>My Google Login Project</h1>
-  <a href="{% provider_login_url 'google' %}">Login with Google</a>
+  <p>not logged in</p>
   {% endif %}
   Your mails:
   {% for mail in responsemessages %}
@@ -19,6 +20,21 @@
 
         </ul>
 
+
   {% endfor %}
+
+  Select table to put mails on:
+  <select>
+
+
+
+  {% for table in trellocontent %}
+
+          <option value="{{table.id}}"> {{ table.name }}</option>
+
+  {% endfor %}
+
+
+    </select>
   </body>
 </html>
