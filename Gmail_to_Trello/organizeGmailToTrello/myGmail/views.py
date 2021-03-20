@@ -11,6 +11,8 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from django.shortcuts import render
 
+from .forms import KeyWordForm
+
 import requests
 import json
 
@@ -90,21 +92,31 @@ def downloadLists(request, board_id=None):
 
     trello_content_json = (requests.get(
         'https://api.trello.com/1/members/' + trello_uid + '/boards?key=' + trello_key + '&token=' + trello_user_token))
-    trello_content = json.loads(trello_content_json.text)
+    trello_boards = json.loads(trello_content_json.text)
 
-    trello_boards_and_lists = []
+    trello_lists_of_the_board = []
     if board_id:
         trello_list_content_json = (requests.get(
             'https://api.trello.com/1/boards/' + board_id + '/lists?key=' + trello_key + '&token=' + trello_user_token))
-        trello_boards_and_lists = json.loads(trello_list_content_json.text)
+        trello_lists_of_the_board = json.loads(trello_list_content_json.text)
 
     context = {
         'selected_id': board_id,
-        'trello_boards': trello_content,
-        'trello_lists': trello_boards_and_lists,
+        'trello_boards': trello_boards,
+        'trello_lists': trello_lists_of_the_board,
     }
 
     return render(request, 'myGmail/view-boards.html', context)
 
-
+def filterMails(request):
+    form = KeyWordForm(request.POST)
+    print(form)
+    if form.is_valid():
+        key_word = form.cleaned_data.get("key_word")
+        board_id = form.cleaned_data.get("board_id")
+        list_id = form.cleaned_data.get("list_id")
+        print(key_word, board_id, list_id)
+    else:
+        print("something is no yes")
+    return render(request, 'myGmail/index.html')
 
