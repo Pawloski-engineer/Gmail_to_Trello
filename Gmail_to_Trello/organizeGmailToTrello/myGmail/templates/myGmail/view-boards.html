@@ -7,22 +7,22 @@
   <h1>My Google Login Project</h1>
 <form action="/filter_mails/" method="POST">
     <p>Select a board to put mails on:</p>
-  <select onchange="load_lists()" id="table_id" value="{{ board_id }}">
+  <select onchange="load_lists()" name="board_id" id="board_id" value="{{ board_id }}">
           <option value="" disabled selected> select a board </option>
   {% for board in trello_boards %}
        {% if board.id == selected_id %}
           <option value="{{board.id}}" selected> {{ board.name }}</option>
         {% else %}
           <option value="{{board.id}}"> {{ board.name }}</option>
-
       {% endif %}
-
   {% endfor %}
     </select>
 
  {% if trello_lists and trello_lists|length > 0 %}
     <p>Select a list:</p>
-    <select id="list">
+    <select id="list" name="list_id">
+<!--        <select id="list"   onchange="pass_ids()">-->
+
             <option value="" disabled selected> select a list </option>
     {% for list in trello_lists %}
             <option value="{{list.id}}"> {{ list.name }}</option>
@@ -39,12 +39,14 @@
     <div>
         <label for="key_word">Give a keyword to search mails:</label>
         <input id="key_word" type="text" name="key_word">
-        <input id="board_id" hidden value="{{board.id}}" type="text" name="board_id">
-        <input id="list_id" hidden value="{{list.id}}" type="text" name="list_id">
+<!--        <input type="hidden" id="board_id_hidden" value=""/>-->
+<!--        <input id="board_id" hidden value="{{ board_id }}" type="text" name="board_id">-->
+<!--        <input id="list_id" hidden value="{{list.id}}" type="text" name="list_id">-->
 
         <input type="submit" value="Submit" name="submit">
+<!--        <input type="submit" value="Submit" name="submit" onclick="pass_ids()">-->
+<!--        -->
     </div>
-
 
 
 </form>
@@ -52,11 +54,22 @@
 
   <script>
     function load_lists() {
-    var board_id = document.getElementById("table_id").value;
+    var board_id = document.getElementById("board_id").value;
     console.log(board_id)
     window.location.href = "/boards/" + board_id;
     }
+  </script>
 
+  <script>
+      function pass_ids() {
+      var board_id = document.getElementById("board_id").value;
+      var list_id = document.getElementById("list_id").value;
+      console.log('value:');
+      console.log(board_id);
+      console.log(list_id);
+      document.getElementById('board_id_hidden').value = board_id
+
+      }
 
   </script>
 

@@ -110,12 +110,23 @@ def downloadLists(request, board_id=None):
 
 def filterMails(request):
     form = KeyWordForm(request.POST)
-    print(form)
+    print('errors', form.errors)
+    # word = form.cleaned_data['key_word']
+    # print("form", word)
+    # key_word = form.key_word
+    # board_id = form.board_id
+    # list_id = form.list_id
+    # print("key word;", key_word, "board id:", board_id, "list id:", list_id)
+    # print(form.clean())
     if form.is_valid():
         key_word = form.cleaned_data.get("key_word")
         board_id = form.cleaned_data.get("board_id")
         list_id = form.cleaned_data.get("list_id")
-        print(key_word, board_id, list_id)
+        # print(key_word, board_id, list_id)
+        print(key_word)
+        print(board_id)
+        print(list_id)
+
     else:
         print("something is no yes")
     return render(request, 'myGmail/index.html')
