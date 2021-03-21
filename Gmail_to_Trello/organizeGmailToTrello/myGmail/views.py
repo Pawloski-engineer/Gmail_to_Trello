@@ -15,9 +15,10 @@ from .forms import KeyWordForm
 
 import requests
 import json
+from django.http import HttpRequest
 
 trello_key = "213abf64ea582c0124da5fcfdb5a6cab"
-
+trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
 # def downloadMails(request):
 #
 #     """Shows basic usage of the Gmail API.
@@ -118,6 +119,16 @@ def trello_destination(request):
         print(key_word)
         print(board_id)
         print(list_id)
+    # I have to pass list_id in the url to Trello
+        trello_url = 'https://api.trello.com/1/cards?key=' + trello_key + '&token=' + trello_token +'&idList=' + list_id + '&name=' + key_word
+        r = requests.post(trello_url)
+
+        return render(request, 'myGmail/index.html')
+
+
+        # r = request.POST(trello_url)
+        # print(r)
+        # return r
 
     else:
         print("something is no yes")
