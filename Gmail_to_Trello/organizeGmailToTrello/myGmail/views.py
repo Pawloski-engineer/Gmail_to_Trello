@@ -108,16 +108,8 @@ def downloadLists(request, board_id=None):
 
     return render(request, 'myGmail/view-boards.html', context)
 
-def filterMails(request):
+def trello_destination(request):
     form = KeyWordForm(request.POST)
-    print('errors', form.errors)
-    # word = form.cleaned_data['key_word']
-    # print("form", word)
-    # key_word = form.key_word
-    # board_id = form.board_id
-    # list_id = form.list_id
-    # print("key word;", key_word, "board id:", board_id, "list id:", list_id)
-    # print(form.clean())
     if form.is_valid():
         key_word = form.cleaned_data.get("key_word")
         board_id = form.cleaned_data.get("board_id")
@@ -129,5 +121,6 @@ def filterMails(request):
 
     else:
         print("something is no yes")
+        print('errors', form.errors)
     return render(request, 'myGmail/index.html')
 

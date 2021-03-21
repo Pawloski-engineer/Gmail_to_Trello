@@ -5,6 +5,6 @@ urlpatterns = [
     # path('mails/', views.downloadMails, name='downloadmails'),
     path('boards/', views.downloadLists, name='downloadBoards'),
     path('boards/<slug:board_id>/', views.downloadLists, name='downloadLists'),
-    path('filter_mails/', views.filterMails, name='filterMails')
+    path('trello_destination/', views.trello_destination, name='trello_destination')
 
     ]
