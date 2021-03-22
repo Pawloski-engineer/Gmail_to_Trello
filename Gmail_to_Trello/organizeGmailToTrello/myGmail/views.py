@@ -19,68 +19,63 @@ from django.http import HttpRequest
 
 trello_key = "213abf64ea582c0124da5fcfdb5a6cab"
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
-# def downloadMails(request):
-#
-#     """Shows basic usage of the Gmail API.
-#     Lists the user's Gmail labels.
-#     """
-#     creds = None
-#     # The file token.pickle stores the user's access and refresh tokens, and is
-#     # created automatically when the authorization flow completes for the first
-#     # time.
-#     user = request.user
-#     result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
-#     google_token = result.token
-#     info = {'client_id':'50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com', 'client_secret':'9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
-#     creds = Credentials.from_authorized_user_info(info) #here
-#
-#
-#
-#     result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[0]
-#     result_user = SocialAccount.objects.filter(user=user, provider="trello")[0]
-#
-#     trello_user_token = result_token.token
-#     trello_uid = result_user.uid
-#
-#     trello_content_json = (requests.get('https://api.trello.com/1/members/' + trello_uid + '/boards?key=' + trello_key + '&token=' +  trello_user_token))
-#     trello_content = json.loads(trello_content_json.text)
-#
-#     service = build('gmail', 'v1', credentials=creds)
-#
-#     # Get Messages
-#     results = service.users().messages().list(userId='me', labelIds='INBOX').execute()
-#     messages = results.get('messages', [])
-#
-#     # message_count = request.data["message_count"] #int(input("How many messages should be displayed?"))
-#     message_count = 5
-#     if not (message_count > 0):
-#         return Response("msg count reqieed")
-#
-#     if not messages:
-#         print('No messages found.')
-#     else:
-#         print('Messages:')
-#         responsemessages = []
-#         for message in messages[:message_count]:
-#             msg = service.users().messages().get(userId='me', id=message['id']).execute()
-#
-#             #m = Mail(snippet=msg['snippet'])
-#             # m = (msg['id'], msg['snippet'])
-#             m = (msg['snippet'])
-#             print(m)
-#             responsemessages.append(m)
-#             # m.save()
-#         # return responsemessages
-#         # return render(request, 'myGmail/view-mails.html', responsemessages)
-#         context = {
-#             'responsemessages': responsemessages,
-#             'trellocontent': trello_content,
-#         }
-#
-#         return render(request, 'myGmail/view-mails.html', context)
-#
-# def downloadBoards(request):
-#     return downloadLists(request, None)
+
+def downloadMails(request):
+
+    """Shows basic usage of the Gmail API.
+    Lists the user's Gmail labels.
+    """
+    creds = None
+    # The file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    user = request.user
+    result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
+    google_token = result.token
+    info = {'client_id':'50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com', 'client_secret':'9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
+    creds = Credentials.from_authorized_user_info(info) #here
+
+    # result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[0]
+    # result_user = SocialAccount.objects.filter(user=user, provider="trello")[0]
+
+    # trello_user_token = result_token.token
+    # trello_uid = result_user.uid
+
+    # trello_content_json = (requests.get('https://api.trello.com/1/members/' + trello_uid + '/boards?key=' + trello_key + '&token=' +  trello_user_token))
+    # trello_content = json.loads(trello_content_json.text)
+
+    service = build('gmail', 'v1', credentials=creds)
+
+    # Get Messages
+    results = service.users().messages().list(userId='me', labelIds='INBOX').execute()
+    messages = results.get('messages', [])
+
+    # message_count = request.data["message_count"] #int(input("How many messages should be displayed?"))
+    message_count = 30
+    if not (message_count > 0):
+        return Response("msg count reqieed")
+
+    if not messages:
+        print('No messages found.')
+    else:
+        print('Messages:')
+        responsemessages = []
+        for message in messages[:message_count]:
+            msg = service.users().messages().get(userId='me', id=message['id']).execute()
+
+            m = (msg['snippet'])
+            print(m)
+            responsemessages.append(m)
+
+        return responsemessages
+
+        # context = {
+        #     'responsemessages': responsemessages,
+        # }
+        # return render(request, 'myGmail/view-mails.html', context)
+
+def downloadBoards(request):
+    return downloadLists(request, None)
 
 
 def downloadLists(request, board_id=None):
@@ -119,19 +114,43 @@ def trello_destination(request):
         print(key_word)
         print(board_id)
         print(list_id)
+        trello_cards = trello_existing_cards(list_id)
+        # print(trello_cards)
+
+        mails = downloadMails(request)
+        # print(mails)
+
+        for mail in mails:
+            if mail not in trello_cards and key_word.lower() in mail.lower():
+                trello_url = 'https://api.trello.com/1/cards?key=' + trello_key + '&token=' + trello_token + '&idList=' + list_id + '&name=' + mail
+                r = requests.post(trello_url)
+
+
     # I have to pass list_id in the url to Trello
-        trello_url = 'https://api.trello.com/1/cards?key=' + trello_key + '&token=' + trello_token +'&idList=' + list_id + '&name=' + key_word
-        r = requests.post(trello_url)
+    #     trello_url = 'https://api.trello.com/1/cards?key=' + trello_key + '&token=' + trello_token +'&idList=' + list_id + '&name=' + key_word
+    #     r = requests.post(trello_url)
 
         return render(request, 'myGmail/index.html')
-
-
-        # r = request.POST(trello_url)
-        # print(r)
-        # return r
 
     else:
         print("something is no yes")
         print('errors', form.errors)
     return render(request, 'myGmail/index.html')
 
+def trello_existing_cards(list_id):
+    url = 'https://api.trello.com/1/lists/' + list_id +'/cards'
+    querry = {
+        'key':trello_key,
+        'token': trello_token
+        }
+    response = requests.request(
+        "GET",
+        url,
+        params=querry
+    )
+    trello_cards = json.loads(response.text)
+    trello_card_names = []
+    for card in trello_cards:
+        trello_card_names.append(card['name'])
+
+    return trello_card_names
