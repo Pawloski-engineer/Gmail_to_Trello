@@ -1,39 +1,39 @@
 {% load socialaccount %}
 <html>
-  <head>
+<head>
     <title>View boards</title>
-  </head>
-  <body>
-  <h1>My Google Login Project</h1>
+</head>
+<body>
+<h1>My Google Login Project</h1>
 <form action="/trello_destination/" method="POST">
     <p>Select a board to put mails on:</p>
-  <select onchange="load_lists()" name="board_id" id="board_id" value="{{ board_id }}">
-          <option value="" disabled selected> select a board </option>
-  {% for board in trello_boards %}
-       {% if board.id == selected_id %}
-          <option value="{{board.id}}" selected> {{ board.name }}</option>
+    <select onchange="load_lists()" name="board_id" id="board_id" value="{{ board_id }}">
+        <option value="" disabled selected> select a board</option>
+        {% for board in trello_boards %}
+        {% if board.id == selected_id %}
+        <option value="{{board.id}}" selected> {{ board.name }}</option>
         {% else %}
-          <option value="{{board.id}}"> {{ board.name }}</option>
-      {% endif %}
-  {% endfor %}
+        <option value="{{board.id}}"> {{ board.name }}</option>
+        {% endif %}
+        {% endfor %}
     </select>
 
- {% if trello_lists and trello_lists|length > 0 %}
+    {% if trello_lists and trello_lists|length > 0 %}
     <p>Select a list:</p>
     <select id="list" name="list_id">
 
-            <option value="" disabled selected> select a list </option>
-    {% for list in trello_lists %}
-            <option value="{{list.id}}"> {{ list.name }}</option>
-    {% endfor %}
-      </select>
+        <option value="" disabled selected> select a list</option>
+        {% for list in trello_lists %}
+        <option value="{{list.id}}"> {{ list.name }}</option>
+        {% endfor %}
+    </select>
 
     {% endif %}
 
 
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        {{ form.as_p }}
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
 
     <div>
         <label for="key_word">Give a keyword to search mails:</label>
@@ -46,15 +46,16 @@
 </form>
 
 
-  <script>
+<script>
     function load_lists() {
     var board_id = document.getElementById("board_id").value;
     console.log(board_id)
     window.location.href = "/boards/" + board_id;
     }
-  </script>
 
-  <script>
+</script>
+
+<script>
       function pass_ids() {
       var board_id = document.getElementById("board_id").value;
       var list_id = document.getElementById("list_id").value;
@@ -65,8 +66,9 @@
 
       }
 
-  </script>
+
+</script>
 
 
-  </body>
+</body>
 </html>
