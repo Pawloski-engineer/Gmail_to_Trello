@@ -90,21 +90,16 @@ def trello_destination(request):    #rename function to indicate what it does
     form = KeyWordForm(request.POST)
     if form.is_valid():
         key_word = form.cleaned_data.get("key_word")
-        board_id = form.cleaned_data.get("board_id")
+        # board_id = form.cleaned_data.get("board_id")
         list_id = form.cleaned_data.get("list_id")
-        print(key_word)
-        print(board_id)
-        print(list_id)
-        trello_cards = trello_existing_cards(list_id)
+        # print(key_word)
+        # print(board_id)
+        # print(list_id)
+        # trello_cards = trello_existing_cards(list_id)
 
-        mails = download_mails(request)
+        # mails = download_mails(request)
 
-# put this method to a separate function
-#         for mail in mails:
-#             if mail not in trello_cards and key_word.lower() in mail.lower():
-#                 trello_url = f"https://api.trello.com/1/cards?key={trello_key}&token={trello_token}&idList={list_id}&name={mail}"
-#                 r = requests.post(trello_url)
-        send_mails_to_trello(mails, trello_cards)
+        send_mails_to_trello(request, key_word, list_id)
         return render(request, 'myGmail/index.html')
 
     else:
@@ -130,7 +125,9 @@ def trello_existing_cards(list_id):
 
     return trello_card_names
 
-def send_mails_to_trello(mails, trello_cards):
+def send_mails_to_trello(request, key_word, list_id):
+    mails = download_mails(request)
+    trello_cards = trello_existing_cards(list_id)
     for mail in mails:
         if mail not in trello_cards and key_word.lower() in mail.lower():
             trello_url = f"https://api.trello.com/1/cards?key={trello_key}&token={trello_token}&idList={list_id}&name={mail}"
