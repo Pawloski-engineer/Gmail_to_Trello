@@ -15,13 +15,11 @@ from .forms import KeyWordForm
 
 import requests
 import json
+
 import csv
-from django.http import HttpResponse
-
-from django.core.files.storage import default_storage
 
 
-trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  # put those int settings.py
+trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  #TODO put those int settings.py
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
 
 
@@ -56,13 +54,13 @@ def download_mails(request):  # JavaScript camelCase, Python name_is_like_that
     if not messages:
         print('No messages found.')
     else:
-        print('Messages:')
+        # print('Messages:')
         responsemessages = []
-        for message in messages[:message_count]:  # i download all mails and then search 20 of downloaded messages
+        for message in messages[:message_count]:  # i download all mails and then search 20 of downloaded messages TODO change it somehow
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
 
             m = (msg['snippet'])
-            print(m)
+            # print(m)
             responsemessages.append(m)
 
         return responsemessages
@@ -85,7 +83,7 @@ def download_lists(request, board_id=None):
     if board_id:
         trello_list_content_json = (requests.get(
             f"https://api.trello.com/1/boards/{board_id}/lists?key={trello_key}&token={trello_user_token}"))
-        trello_lists_of_the_board = json.loads(trello_list_content_json.text)  # raise exception of no response
+        trello_lists_of_the_board = json.loads(trello_list_content_json.text)  #TODO raise exception of no response
 
     context = {
         'selected_id': board_id,
@@ -96,7 +94,7 @@ def download_lists(request, board_id=None):
     return render(request, 'myGmail/view-boards.html', context)
 
 
-def save_trello_destination(request):  # rename function to indicate what it does
+def save_trello_destination(request):  # rename function to indicate what it does TODO come up with some name for destination - it shoulkd describe search rules given by user
     form = KeyWordForm(request.POST)
     if form.is_valid():
         key_word = form.cleaned_data.get("key_word")
@@ -104,9 +102,8 @@ def save_trello_destination(request):  # rename function to indicate what it doe
 
         # save data to CSV and pass it to the function that sends mails to trello
         csv_file = open("trello_destination.csv", "a")  #file is created
-        csv_file.write(f"{key_word}, {list_id}\n")
+        csv_file.write(f"{key_word},{list_id}\n")
         csv_file.close()
-
 
 
         # send_mails_to_trello(request, key_word, list_id)
@@ -137,8 +134,21 @@ def trello_existing_cards(list_id):
     return trello_card_names
 
 
-def send_mails_to_trello(request, key_word, list_id):
+def check_mails(request):   #TODO change function name to e.g. "go_through_saved_rules"
     mails = download_mails(request)
+    trello_destinations = change_csv_to_a_list(request)
+
+    for key_word_list_id_pair in trello_destinations:
+        key_word = key_word_list_id_pair[0]
+        list_id = key_word_list_id_pair[1]
+        # print(key_word, list_id)
+        send_mails_to_trello(key_word, list_id, mails)
+
+    return render(request, 'myGmail/index.html')
+
+
+def send_mails_to_trello(key_word, list_id, mails):   #TODO add checking list existence - user may delete list from trello
+    #mails are downloaded in ecternal function to prevent from downloading them several times
     trello_cards = trello_existing_cards(list_id)
     for mail in mails:
         if mail not in trello_cards and key_word.lower() in mail.lower():
@@ -146,11 +156,9 @@ def send_mails_to_trello(request, key_word, list_id):
             r = requests.post(trello_url)
 
 
-# def save_to_csv(key_word, list_id):
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="trelloDestination.csv"'
-#     writer = csv.writer(response)
-#     writer.writerow(['FIrst row', 'Second row'])
-#     writer.writerow([key_word, list_id])
-#
-#     return response
+def change_csv_to_a_list(request):
+    with open('trello_destination.csv', newline='') as csv_file:
+        reader = csv.reader(csv_file)
+        data = list(reader)
+        csv_file.close()
+        return data
