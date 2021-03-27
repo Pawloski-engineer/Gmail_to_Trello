@@ -15,11 +15,17 @@ from .forms import KeyWordForm
 
 import requests
 import json
+import csv
+from django.http import HttpResponse
 
-trello_key = "213abf64ea582c0124da5fcfdb5a6cab"     # put those int settings.py
+from django.core.files.storage import default_storage
+
+
+trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  # put those int settings.py
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
 
-def download_mails(request):     #JavaScript camelCase, Python name_is_like_that
+
+def download_mails(request):  # JavaScript camelCase, Python name_is_like_that
 
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
@@ -32,14 +38,15 @@ def download_mails(request):     #JavaScript camelCase, Python name_is_like_that
     result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
     google_token = result.token
     # put info to settings.py
-    info = {'client_id':'50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com', 'client_secret':'9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
-    creds = Credentials.from_authorized_user_info(info) #here
+    info = {'client_id': '50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com',
+            'client_secret': '9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
+    creds = Credentials.from_authorized_user_info(info)  # here
 
     service = build('gmail', 'v1', credentials=creds)
 
     # Get Messages
     results = service.users().messages().list(userId='me', labelIds='INBOX').execute()
-    messages = results.get('messages', [])          # load just some messages, not all
+    messages = results.get('messages', [])  # load just some messages, not all
 
     # message_count = request.data["message_count"] #int(input("How many messages should be displayed?"))
     message_count = 20
@@ -51,7 +58,7 @@ def download_mails(request):     #JavaScript camelCase, Python name_is_like_that
     else:
         print('Messages:')
         responsemessages = []
-        for message in messages[:message_count]:        # i download all mails and then search 20 of downloaded messages
+        for message in messages[:message_count]:  # i download all mails and then search 20 of downloaded messages
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
 
             m = (msg['snippet'])
@@ -61,22 +68,24 @@ def download_mails(request):     #JavaScript camelCase, Python name_is_like_that
         return responsemessages
 
 
-
 def download_lists(request, board_id=None):
     user = request.user
-    result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[0]    # raise exception of no tokens found
+    result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[
+        0]  # raise exception of no tokens found
     result_user = SocialAccount.objects.filter(user=user, provider="trello")[0]
 
     trello_user_token = result_token.token
     trello_uid = result_user.uid
 
-    trello_content_json = (requests.get(f"https://api.trello.com/1/members/{trello_uid}/boards?key={trello_key}&token={trello_user_token}"))
+    trello_content_json = (requests.get(
+        f"https://api.trello.com/1/members/{trello_uid}/boards?key={trello_key}&token={trello_user_token}"))
     trello_boards = json.loads(trello_content_json.text)
 
     trello_lists_of_the_board = []
     if board_id:
-        trello_list_content_json = (requests.get(f"https://api.trello.com/1/boards/{board_id}/lists?key={trello_key}&token={trello_user_token}"))
-        trello_lists_of_the_board = json.loads(trello_list_content_json.text)       # raise exception of no response
+        trello_list_content_json = (requests.get(
+            f"https://api.trello.com/1/boards/{board_id}/lists?key={trello_key}&token={trello_user_token}"))
+        trello_lists_of_the_board = json.loads(trello_list_content_json.text)  # raise exception of no response
 
     context = {
         'selected_id': board_id,
@@ -86,20 +95,21 @@ def download_lists(request, board_id=None):
 
     return render(request, 'myGmail/view-boards.html', context)
 
-def trello_destination(request):    #rename function to indicate what it does
+
+def save_trello_destination(request):  # rename function to indicate what it does
     form = KeyWordForm(request.POST)
     if form.is_valid():
         key_word = form.cleaned_data.get("key_word")
-        # board_id = form.cleaned_data.get("board_id")
         list_id = form.cleaned_data.get("list_id")
-        # print(key_word)
-        # print(board_id)
-        # print(list_id)
-        # trello_cards = trello_existing_cards(list_id)
 
-        # mails = download_mails(request)
+        # save data to CSV and pass it to the function that sends mails to trello
+        csv_file = open("trello_destination.csv", "a")  #file is created
+        csv_file.write(f"{key_word}, {list_id}\n")
+        csv_file.close()
 
-        send_mails_to_trello(request, key_word, list_id)
+
+
+        # send_mails_to_trello(request, key_word, list_id)
         return render(request, 'myGmail/index.html')
 
     else:
@@ -107,12 +117,13 @@ def trello_destination(request):    #rename function to indicate what it does
         print('errors', form.errors)
     return render(request, 'myGmail/index.html')
 
+
 def trello_existing_cards(list_id):
     get_cards_requests = f"https://api.trello.com/1/lists/{list_id}/cards"
     querry = {
-        'key':trello_key,
+        'key': trello_key,
         'token': trello_token
-        }
+    }
     response = requests.request(
         "GET",
         get_cards_requests,
@@ -125,6 +136,7 @@ def trello_existing_cards(list_id):
 
     return trello_card_names
 
+
 def send_mails_to_trello(request, key_word, list_id):
     mails = download_mails(request)
     trello_cards = trello_existing_cards(list_id)
@@ -132,3 +144,13 @@ def send_mails_to_trello(request, key_word, list_id):
         if mail not in trello_cards and key_word.lower() in mail.lower():
             trello_url = f"https://api.trello.com/1/cards?key={trello_key}&token={trello_token}&idList={list_id}&name={mail}"
             r = requests.post(trello_url)
+
+
+# def save_to_csv(key_word, list_id):
+#     response = HttpResponse(content_type='text/csv')
+#     response['Content-Disposition'] = 'attachment; filename="trelloDestination.csv"'
+#     writer = csv.writer(response)
+#     writer.writerow(['FIrst row', 'Second row'])
+#     writer.writerow([key_word, list_id])
+#
+#     return response
