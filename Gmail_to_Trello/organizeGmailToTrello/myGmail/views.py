@@ -18,10 +18,28 @@ import json
 
 import csv
 
+from datetime import datetime, timedelta
+import time
 
 trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  #TODO put those int settings.py
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
 
+
+def turn_on_off(request, status_on_off=None):
+    if status_on_off == "OFF" or status_on_off is None:
+        status_on_off = "ON"
+
+    else:
+        status_on_off = "OFF"
+
+    check_mails(request, status_on_off)
+    return render(request, 'myGmail/index.html')
+
+
+
+
+def index(request):
+    return render(request, 'myGmail/index.html')
 
 def download_mails(request):  # JavaScript camelCase, Python name_is_like_that
 
@@ -134,7 +152,7 @@ def trello_existing_cards(list_id):
     return trello_card_names
 
 
-def check_mails(request):   #TODO change function name to e.g. "go_through_saved_rules"
+def check_mails(request, status_on_off):
     mails = download_mails(request)
     trello_destinations = change_csv_to_a_list(request)
 
@@ -143,6 +161,13 @@ def check_mails(request):   #TODO change function name to e.g. "go_through_saved
         list_id = key_word_list_id_pair[1]
         # print(key_word, list_id)
         send_mails_to_trello(key_word, list_id, mails)
+
+    # while status_on_off == "ON":
+    while status_on_off == "ON":
+        time_started = datetime.now() + timedelta(minutes=3)
+        while datetime.now() < time_started:
+            time.sleep(1)
+
 
     return render(request, 'myGmail/index.html')
 
@@ -156,9 +181,13 @@ def send_mails_to_trello(key_word, list_id, mails):   #TODO add checking list ex
             r = requests.post(trello_url)
 
 
+
+
 def change_csv_to_a_list(request):
     with open('trello_destination.csv', newline='') as csv_file:
         reader = csv.reader(csv_file)
         data = list(reader)
         csv_file.close()
         return data
+
+
