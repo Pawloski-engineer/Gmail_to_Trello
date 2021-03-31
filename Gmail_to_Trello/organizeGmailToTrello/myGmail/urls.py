@@ -9,6 +9,5 @@ urlpatterns = [
     path('boards/<slug:board_id>/', views.download_lists, name='download_lists'),
     path('save_trello_destination/', views.save_trello_destination, name='save_trello_destination'),
     path('check_mails/', views.check_mails, name='check_mails'),
-    path('turn_on_off/', views.turn_on_off, name='turn_on_off'),
 
     ]
