@@ -1,9 +1,6 @@
-
-
 from allauth.socialaccount.models import SocialToken, SocialAccount
 from django.contrib.auth.models import User
 from google.oauth2.credentials import Credentials
-from .forms import KeyWordForm
 
 import requests
 import json
@@ -26,8 +23,6 @@ def download_mails(user_id):  # JavaScript camelCase, Python name_is_like_that
     # created automatically when the authorization flow completes for the first
     # time.
 
-
-
     user = User.objects.get(id=user_id)
 
     result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
@@ -49,13 +44,10 @@ def download_mails(user_id):  # JavaScript camelCase, Python name_is_like_that
     if not messages:
         print('No messages found.')
     else:
-        # print('Messages:')
         responsemessages = []
         for message in messages[:message_count]:  # i download all mails and then search 20 of downloaded messages TODO change it somehow
             msg = service.users().messages().get(userId='me', id=message['id']).execute()
-
             m = (msg['snippet'])
-            # print(m)
             responsemessages.append(m)
 
         return responsemessages
@@ -79,11 +71,6 @@ def trello_existing_cards(list_id):
 
     return trello_card_names
 
-
-
-
-
-    # return render(request, 'myGmail/index.html')
 
 
 def send_mails_to_trello(key_word, list_id, mails):   #TODO add checking list existence - user may delete list from trello

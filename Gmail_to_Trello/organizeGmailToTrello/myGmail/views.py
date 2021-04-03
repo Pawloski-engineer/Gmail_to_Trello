@@ -17,31 +17,16 @@ from django.shortcuts import render
 
 import csv
 
-
-from datetime import datetime, timedelta
-import time
-
-# from .tasks import send_to_server
-# from .tasks import check_mails
-
-from .functions import download_mails
-
-
-
-
-from background_task import background
+from .forms import KeyWordForm
 
 
 def index(request):
     return render(request, 'myGmail/index.html')
 
 
-
-
 def download_lists(request, board_id=None):
     user = request.user
-    result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[
-        0]  # raise exception of no tokens found
+    result_token = SocialToken.objects.filter(account__user=user, account__provider="trello")[0]  # raise exception of no tokens found
     result_user = SocialAccount.objects.filter(user=user, provider="trello")[0]
 
     trello_user_token = result_token.token
@@ -92,15 +77,6 @@ def save_trello_destination(request):  # rename function to indicate what it doe
 #     download_some_mails(user_id)
 
 def check_mails(request):   #TODO change function name to e.g. "go_through_saved_rules"
-    print("Calling function")
-    # print_sth(repeat=1, repeat_until=None)
-    # send_to_server(mails, trello_destinations, trello_key, trello_token, repeat=30, repeat_until=None, )
-    #
-    print("Called function")
-
-    # return render(request, 'myGmail/index.html')
-
-    # mails = download_mails(request)
     trello_destinations = change_csv_to_a_list()
     user_id = request.user.id
 
@@ -108,7 +84,7 @@ def check_mails(request):   #TODO change function name to e.g. "go_through_saved
         key_word = key_word_list_id_pair[0]
         list_id = key_word_list_id_pair[1]
         # send_mails_to_trello(key_word, list_id, mails)
-        download_some_mails(user_id, list_id, key_word)
+        download_some_mails(user_id, list_id, key_word) #TODO instead of passing key_word pass trello_destination and iterate over it in tasks.py
     return render(request, 'myGmail/index.html')
 
 def change_csv_to_a_list():

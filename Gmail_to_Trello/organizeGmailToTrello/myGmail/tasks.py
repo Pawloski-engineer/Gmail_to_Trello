@@ -13,9 +13,15 @@ def download_some_mails(user_id, list_id, key_word):
 
     print(mails)
 
-    filterdMails = mails
+    filterdMails = []
+    for mail in mails:
+        if key_word in mail:
+            filterdMails.append(mail)
 
     print(filterdMails)
-
+    # TODO create new file to check iof function is called without running
+    file = open("hehe.csv", "a")
+    file.write("{key_word},{list_id}\n")
+    file.close()
     send_mails_to_trello(key_word, list_id, filterdMails)
 
