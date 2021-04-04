@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 
 import requests
 import json
-
+import csv
 
 from googleapiclient.discovery import build
 
@@ -81,4 +81,9 @@ def send_mails_to_trello(key_word, list_id, mails):   #TODO add checking list ex
             trello_url = f"https://api.trello.com/1/cards?key={trello_key}&token={trello_token}&idList={list_id}&name={mail}"
             r = requests.post(trello_url)
 
-
+def change_csv_to_a_list():
+    with open('trello_destination.csv', newline='') as csv_file:
+        reader = csv.reader(csv_file)
+        data = list(reader)
+        csv_file.close()
+        return data

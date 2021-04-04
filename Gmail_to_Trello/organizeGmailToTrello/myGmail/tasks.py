@@ -5,23 +5,23 @@ from background_task import background
 #     print("hola")
 
 
-from .functions import download_mails, send_mails_to_trello
+from .functions import download_mails, send_mails_to_trello, change_csv_to_a_list
 
 @background(schedule=3)
-def download_some_mails(user_id, list_id, key_word):
+def download_some_mails(user_id):
     mails = download_mails(user_id)
-
     print(mails)
+    trello_destinations = change_csv_to_a_list()
 
-    filterdMails = []
-    for mail in mails:
-        if key_word in mail:
-            filterdMails.append(mail)
+    for key_word_list_id_pair in trello_destinations:
+        key_word = key_word_list_id_pair[0]
+        list_id = key_word_list_id_pair[1]
+        send_mails_to_trello(key_word, list_id, mails)
 
-    print(filterdMails)
-    # TODO create new file to check iof function is called without running
-    file = open("hehe.csv", "a")
-    file.write("{key_word},{list_id}\n")
-    file.close()
-    send_mails_to_trello(key_word, list_id, filterdMails)
+
+    # # TODO create new file to check iof function is called without running
+    # file = open("hehe.csv", "a")
+    # file.write("{key_word},{list_id}\n")
+    # file.close()
+
 
