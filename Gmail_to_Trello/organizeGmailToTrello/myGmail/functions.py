@@ -12,7 +12,6 @@ trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  #TODO put those int settings.py
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
 
 
-
 def download_mails(user_id):  # JavaScript camelCase, Python name_is_like_that
 
     """Shows basic usage of the Gmail API.

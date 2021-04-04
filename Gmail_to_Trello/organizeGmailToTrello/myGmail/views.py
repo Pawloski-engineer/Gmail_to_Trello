@@ -1,25 +1,22 @@
-from django.shortcuts import render
-
-# Create your views here.
 
 # To process tasks additionally to py manage.py runserver a command has to be sent:
 # python manage.py process_tasks
 
 from allauth.socialaccount.models import SocialToken, SocialAccount
+# from allauth.socialaccount.providers.trello.provider import TrelloProvider #in this file there is a problrm with incorrect url
+# https://github.com/pennersr/django-allauth/issues/2378
 import requests
 import json
 
 trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  #TODO put those int settings.py
 trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
-# from allauth.socialaccount.providers.trello.provider import TrelloProvider #in this file there is a problrm with incorrect url
-# https://github.com/pennersr/django-allauth/issues/2378
+
+
 
 
 from .tasks import download_some_mails
 
 from django.shortcuts import render
-
-import csv
 
 from .forms import KeyWordForm
 
@@ -74,26 +71,10 @@ def save_trello_destination(request):  # rename function to indicate what it doe
     return render(request, 'myGmail/index.html')
 
 
-def check_mails(request):   #TODO change function name to e.g. "go_through_saved_rules"
-    # trello_destinations = change_csv_to_a_list()
+def check_mails(request):
     user_id = request.user.id
-
-    # for key_word_list_id_pair in trello_destinations:
-    #     key_word = key_word_list_id_pair[0]
-    #     list_id = key_word_list_id_pair[1]
-    #     # send_mails_to_trello(key_word, list_id, mails)
-
-
-    download_some_mails(user_id, repeat = 60, repeat_until = None) #TODO instead of passing key_word pass trello_destination and iterate over it in tasks.py
+    download_some_mails(user_id, repeat=60, repeat_until=None)
     return render(request, 'myGmail/index.html')
-
-# def change_csv_to_a_list():
-#     with open('trello_destination.csv', newline='') as csv_file:
-#         reader = csv.reader(csv_file)
-#         data = list(reader)
-#         csv_file.close()
-#         return data
-
 
 # TODO Django_background_tasks
 

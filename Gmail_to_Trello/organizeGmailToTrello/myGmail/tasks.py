@@ -1,10 +1,4 @@
 from background_task import background
-
-# @background()
-# def print_sth():
-#     print("hola")
-
-
 from .functions import download_mails, send_mails_to_trello, change_csv_to_a_list
 
 @background(schedule=3)
@@ -23,5 +17,3 @@ def download_some_mails(user_id):
     # file = open("hehe.csv", "a")
     # file.write("{key_word},{list_id}\n")
     # file.close()
-
-
