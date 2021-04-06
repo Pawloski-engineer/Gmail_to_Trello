@@ -24,8 +24,13 @@ def download_mails(user_id):  # JavaScript camelCase, Python name_is_like_that
 
     user = User.objects.get(id=user_id)
 
-    result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
-    google_token = result.token
+    # result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
+    # google_token = result.token
+
+    account = user.socialaccount_set.get(provider="google")
+    refresh_token = account.socialtoken_set.first().token_secret
+    google_token = refresh_token
+
     # put info to settings.py
     info = {'client_id': '50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com',
             'client_secret': '9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
