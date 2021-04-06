@@ -1,6 +1,10 @@
-from allauth.socialaccount.models import SocialToken, SocialAccount
+# from allauth.socialaccount.models import SocialToken, SocialAccount
+
+
 from django.contrib.auth.models import User
 from google.oauth2.credentials import Credentials
+
+from social_django.utils import load_strategy
 
 import requests
 import json
@@ -24,9 +28,14 @@ def download_mails(user_id):  # JavaScript camelCase, Python name_is_like_that
 
     user = User.objects.get(id=user_id)
 
-    result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
-    google_token = result.token
+    # result = SocialToken.objects.filter(account__user=user, account__provider="google")[0]
+    # print(result)
+    social = user.social_auth.get(provider='google-oauth2')
+    access_token = social.get_access_token(load_strategy())
+
+    # google_token = result.token
     # put info to settings.py
+    google_token = access_token
     info = {'client_id': '50255132291-r0p1je5i2il7dte7ko5u78le0r2bd82r.apps.googleusercontent.com',
             'client_secret': '9Guzas1mEJK1VXDczxQY_tvT', 'refresh_token': google_token}
     creds = Credentials.from_authorized_user_info(info)  # here

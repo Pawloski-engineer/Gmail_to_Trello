@@ -20,10 +20,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'm8#bp^n28@*m9)^-14rq5c2(1$c224=mjbd+u53rm3_4)q!w2e'
+# SECRET_KEY = 'm8#bp^n28@*m9)^-14rq5c2(1$c224=mjbd+u53rm3_4)q!w2e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+SOCIAL_AUTH_GOOGLE_KEY = '558638986356-24b7vete0dg8724ru1liab0eg21tv9fk.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_SECRET = 'LNDzRpi3ECCQzbZL3SlDxZHM'
+
+SOCIAL_AUTH_TRELLO_KEY = '213abf64ea582c0124da5fcfdb5a6cab'
+SOCIAL_AUTH_TRELLO_SECRET = 'd1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b'
+
+
 
 ALLOWED_HOSTS = []
 
