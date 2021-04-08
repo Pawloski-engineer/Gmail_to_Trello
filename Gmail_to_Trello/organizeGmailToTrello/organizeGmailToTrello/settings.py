@@ -151,7 +151,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'https://www.googleapis.com/auth/gmail.readonly',
         ],
         'AUTH_PARAMS': {
-            'access_type': 'online',
+            'access_type': 'offline',
         }
     },
     'trello': {
