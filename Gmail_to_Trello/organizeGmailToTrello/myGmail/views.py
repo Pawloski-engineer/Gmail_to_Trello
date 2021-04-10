@@ -41,7 +41,7 @@ def download_lists(request, board_id=None):
     if board_id:
         trello_list_content_json = (requests.get(
             f"https://api.trello.com/1/boards/{board_id}/lists?key={trello_key}&token={trello_user_token}"))
-        trello_lists_of_the_board = json.loads(trello_list_content_json.text)  #TODO raise exception of no response
+        trello_lists_of_the_board = json.loads(trello_list_content_json.text)  #TODO raise exception of no response or if no boards then create one
 
     context = {
         'selected_id': board_id,
