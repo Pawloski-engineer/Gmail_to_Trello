@@ -1,0 +1,30 @@
+{% load socialaccount %}
+<html>
+<head>
+    <title>Gmail to Trello</title>
+</head>
+  <body>
+  <h1>Gmail to Trello</h1>
+  {% if user.is_authenticated %}
+    <p>Welcome, {{ user.username }} ! <a href="/logout"> Logout </a></p>
+    <!--  Show my <a href="/mails"> mails</a>-->
+    <p> Select <a href="/boards">destination board and a keyword</a></p>
+    <!--<p>  <a href="/send_mails_to_trello">Send mails to trello</a></p>-->
+    <p><a href="/check_mails">Turn mail checking on</a></p>
+
+
+
+  {% else %}
+    <h2>You have to login first</h2>
+    <p><a href="{% provider_login_url 'google' %}">Login with Google</a></p>
+
+    <p><a href="{% provider_login_url 'trello' %}">Login with Trello</a></p>
+  {% endif %}
+
+
+  <!--<p>  <a href="/change_csv_to_a_list">change_csv_to_a_list</a></p>-->
+
+
+  <!--  <p><a href="mails/">Show mails</a></p>-->
+  </body>
+</html>
