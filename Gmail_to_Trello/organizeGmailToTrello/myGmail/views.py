@@ -8,8 +8,8 @@ from allauth.socialaccount.models import SocialToken, SocialAccount
 import requests
 import json
 
-trello_key = "213abf64ea582c0124da5fcfdb5a6cab"  #TODO put those int settings.py
-trello_token = "d1883cff1de9834e7c537dffb70d9dc713441e16b35e53fc8098458a44461c9b"
+trello_key = ""  #TODO put those int settings.py
+trello_token = ""
 
 
 
